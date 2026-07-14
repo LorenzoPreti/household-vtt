@@ -42,12 +42,12 @@ jobs:
         with:
           channel: "stable"
 
-      # Aggiungiamo un flag per evitare che Swift Package Manager fallisca
       - name: Build
         run: |
           flutter config --enable-macos-desktop
           flutter pub get
-          flutter build macos --release --no-codesign
+          # Rimosso --no-codesign, usiamo il comando pulito
+          flutter build macos --release
 
       - name: Package
         run: |
