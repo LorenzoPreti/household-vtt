@@ -25,16 +25,32 @@ jobs:
 
       - name: Package
         run: |
-          # Cerchiamo la cartella dinamica in modo ricorsivo
-          $releaseDir = Get-ChildItem -Path "build\windows" -Filter "Release" -Directory -Recurse | Select-Object -ExpandProperty FullName -First 1
-          Write-Host "Target Release Directory: $releaseDir"
-          
-          if (-not $releaseDir) {
-            Write-Error "ERRORE: Cartella Release non trovata!"
+          # Troviamo l'eseguibile .exe generato da Flutter (il vero output "runner")
+          $exe = Get-ChildItem -Path "build\windows" -Filter "*.exe" -Recurse |
+                 Where-Object { $_.FullName -match "runner\\Release" } |
+                 Select-Object -First 1
+
+          if (-not $exe) {
+            Write-Host "Struttura build\windows:"
+            Get-ChildItem -Path "build\windows" -Recurse | Select-Object FullName
+            Write-Error "ERRORE: Eseguibile Release non trovato!"
             exit 1
           }
-          
+
+          $releaseDir = $exe.DirectoryName
+          Write-Host "Target Release Directory: $releaseDir"
+          Write-Host "Contenuto cartella Release:"
+          Get-ChildItem $releaseDir
+
           Compress-Archive -Path "$releaseDir\*" -DestinationPath household_vtt-windows.zip -Force
+
+          if (-not (Test-Path "household_vtt-windows.zip")) {
+            Write-Error "ERRORE: household_vtt-windows.zip non è stato creato!"
+            exit 1
+          }
+
+          Write-Host "Zip creato correttamente:"
+          Get-Item household_vtt-windows.zip
         shell: pwsh
 
       - uses: actions/upload-artifact@v4
