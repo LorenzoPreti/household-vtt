@@ -22,21 +22,28 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Enable Windows desktop
-        run: flutter config --enable-windows-desktop
-
       - name: Build Windows release
-        run: flutter build windows --release
+        run: |
+          flutter config --enable-windows-desktop
+          flutter build windows --release
 
-      - name: Zip Windows build
+      - name: Create MSIX installer
+        run: |
+          dart pub global activate msix
+          dart run msix:create
+
+      - name: Package files
         run: |
           Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath household_vtt-windows.zip
+          Copy-Item -Path build\windows\runner\Release\*.msix -Destination .
         shell: pwsh
 
       - uses: actions/upload-artifact@v4
         with:
-          name: windows-build
-          path: household_vtt-windows.zip
+          name: windows-artifacts
+          path: |
+            household_vtt-windows.zip
+            *.msix
 
   build-macos:
     runs-on: macos-latest
@@ -50,11 +57,10 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Enable macOS desktop
-        run: flutter config --enable-macos-desktop
-
       - name: Build macOS release
-        run: flutter build macos --release
+        run: |
+          flutter config --enable-macos-desktop
+          flutter build macos --release
 
       - name: Zip macOS build (preserva permessi .app)
         run: |
@@ -79,7 +85,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/windows-build/household_vtt-windows.zip
+            artifacts/windows-artifacts/household_vtt-windows.zip
+            artifacts/windows-artifacts/*.msix
             artifacts/macos-build/household_vtt-macos.zip
           generate_release_notes: true
         env:
