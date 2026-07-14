@@ -20,12 +20,20 @@ jobs:
       - name: Build
         run: |
           flutter config --enable-windows-desktop
+          flutter pub get
           flutter build windows --release
 
       - name: Package
         run: |
-          # Trova la cartella Release in modo dinamico
+          # Cerchiamo la cartella dinamica in modo ricorsivo
           $releaseDir = Get-ChildItem -Path "build\windows" -Filter "Release" -Directory -Recurse | Select-Object -ExpandProperty FullName -First 1
+          Write-Host "Target Release Directory: $releaseDir"
+          
+          if (-not $releaseDir) {
+            Write-Error "ERRORE: Cartella Release non trovata!"
+            exit 1
+          }
+          
           Compress-Archive -Path "$releaseDir\*" -DestinationPath household_vtt-windows.zip -Force
         shell: pwsh
 
@@ -46,11 +54,11 @@ jobs:
         run: |
           flutter config --enable-macos-desktop
           flutter pub get
-          # Rimosso --no-codesign, usiamo il comando pulito
           flutter build macos --release
 
       - name: Package
         run: |
+          # Usiamo zip standard per macOS
           cd build/macos/Build/Products/Release
           zip -r -y ../../../../../household_vtt-macos.zip *.app
           cd -
@@ -71,6 +79,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v1.2.9
           files: |
             artifacts/windows-build/household_vtt-windows.zip
             artifacts/macos-build/household_vtt-macos.zip
