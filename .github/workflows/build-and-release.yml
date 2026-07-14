@@ -29,10 +29,10 @@ jobs:
 
       - name: Package files
         run: |
-          # Trova la cartella Release dove flutter ha compilato l'app
           $releaseDir = Get-ChildItem -Path "build\windows" -Filter "Release" -Directory -Recurse | Select-Object -ExpandProperty FullName -First 1
-          # Crea lo zip partendo dal contenuto della cartella Release
-          Compress-Archive -Path "$releaseDir\*" -DestinationPath household_vtt-windows.zip
+            
+          
+          Compress-Archive -Path "$releaseDir\*" -DestinationPath household_vtt-windows.zip -Force
         shell: pwsh
 
       - uses: actions/upload-artifact@v4
