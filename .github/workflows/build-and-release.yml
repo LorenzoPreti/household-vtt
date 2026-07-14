@@ -22,22 +22,20 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build Windows release
-        run: |
-          flutter config --enable-windows-desktop
-          flutter build windows --release
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
 
-      - name: Package files
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Zip Windows build
         run: |
-          $releaseDir = Get-ChildItem -Path "build\windows" -Filter "Release" -Directory -Recurse | Select-Object -ExpandProperty FullName -First 1
-            
-          
-          Compress-Archive -Path "$releaseDir\*" -DestinationPath household_vtt-windows.zip -Force
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath household_vtt-windows.zip
         shell: pwsh
 
       - uses: actions/upload-artifact@v4
         with:
-          name: windows-artifacts
+          name: windows-build
           path: household_vtt-windows.zip
 
   build-macos:
@@ -52,10 +50,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Enable macOS desktop
+        run: flutter config --enable-macos-desktop
+
       - name: Build macOS release
-        run: |
-          flutter config --enable-macos-desktop
-          flutter build macos --release
+        run: flutter build macos --release
 
       - name: Zip macOS build (preserva permessi .app)
         run: |
@@ -65,7 +64,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: macos-artifacts
+          name: macos-build
           path: household_vtt-macos.zip
 
   release:
@@ -80,8 +79,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/windows-artifacts/household_vtt-windows.zip
-            artifacts/macos-artifacts/household_vtt-macos.zip
+            artifacts/windows-build/household_vtt-windows.zip
+            artifacts/macos-build/household_vtt-macos.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
