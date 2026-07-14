@@ -34,8 +34,11 @@ jobs:
 
       - name: Package files
         run: |
-          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath household_vtt-windows.zip
-          Copy-Item -Path build\windows\runner\Release\*.msix -Destination .
+          $releasePath = Get-ChildItem -Path "build\windows" -Filter "Release" -Recurse | Select-Object -ExpandProperty FullName -First 1
+            
+          Compress-Archive -Path "$releasePath\*" -DestinationPath household_vtt-windows.zip
+            
+          Copy-Item -Path "$releasePath\*.msix" -Destination .
         shell: pwsh
 
       - uses: actions/upload-artifact@v4
