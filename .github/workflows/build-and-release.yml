@@ -46,7 +46,7 @@ jobs:
           name: windows-artifacts
           path: |
             household_vtt-windows.zip
-            *.msix
+            **/*.msix
 
   build-macos:
     runs-on: macos-latest
@@ -89,7 +89,7 @@ jobs:
         with:
           files: |
             artifacts/windows-artifacts/household_vtt-windows.zip
-            artifacts/windows-artifacts/*.msix
+            artifacts/windows-artifacts/**/*.msix
             artifacts/macos-build/household_vtt-macos.zip
           generate_release_notes: true
         env:
