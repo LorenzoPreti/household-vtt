@@ -1,6 +1,5 @@
-name: Build & Release (Windows + macOS)
+name: Build & Release
 
-# Si attiva quando pushi un tag tipo v1.0.0
 on:
   push:
     tags:
@@ -14,23 +13,20 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
 
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Enable Windows desktop
-        run: flutter config --enable-windows-desktop
-
-      - name: Build Windows release
-        run: flutter build windows --release
-
-      - name: Zip Windows build
+      - name: Build
         run: |
-          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath household_vtt-windows.zip
+          flutter config --enable-windows-desktop
+          flutter build windows --release
+
+      - name: Package
+        run: |
+          # Trova la cartella Release in modo dinamico
+          $releaseDir = Get-ChildItem -Path "build\windows" -Filter "Release" -Directory -Recurse | Select-Object -ExpandProperty FullName -First 1
+          Compress-Archive -Path "$releaseDir\*" -DestinationPath household_vtt-windows.zip -Force
         shell: pwsh
 
       - uses: actions/upload-artifact@v4
@@ -42,24 +38,21 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
 
-      - name: Install dependencies
-        run: flutter pub get
+      # Aggiungiamo un flag per evitare che Swift Package Manager fallisca
+      - name: Build
+        run: |
+          flutter config --enable-macos-desktop
+          flutter pub get
+          flutter build macos --release --no-codesign
 
-      - name: Enable macOS desktop
-        run: flutter config --enable-macos-desktop
-
-      - name: Build macOS release
-        run: flutter build macos --release
-
-      - name: Zip macOS build (preserva permessi .app)
+      - name: Package
         run: |
           cd build/macos/Build/Products/Release
-          ditto -c -k --sequesterRsrc --keepParent *.app ../../../../../household_vtt-macos.zip
+          zip -r -y ../../../../../household_vtt-macos.zip *.app
           cd -
 
       - uses: actions/upload-artifact@v4
