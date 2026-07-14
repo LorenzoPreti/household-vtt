@@ -1377,7 +1377,7 @@ class _TestoInputState extends State<TestoInput> {
         controller: _controller,
         onChanged: _onChanged,
         keyboardType: TextInputType.number,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        //inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         style: TextStyle(fontSize: widget.c.maxWidth * 0.015, fontWeight: FontWeight.w600),
         decoration: const InputDecoration(
           isDense: true,
