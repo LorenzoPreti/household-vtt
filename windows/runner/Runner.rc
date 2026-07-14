@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.lorenzopreti" "\0"
-            VALUE "FileDescription", "household_vtt" "\0"
+            VALUE "CompanyName", "Lorenzo Preti" "\0"
+            VALUE "FileDescription", "Household VTT - Gestione Sessioni Fabula Ultima" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "household_vtt" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.lorenzopreti. All rights reserved." "\0"
-            VALUE "OriginalFilename", "household_vtt.exe" "\0"
-            VALUE "ProductName", "household_vtt" "\0"
+            VALUE "InternalName", "Household VTT" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 Lorenzo Preti. Tutti i diritti riservati." "\0"
+            VALUE "OriginalFilename", "HouseholdVTT.exe" "\0"
+            VALUE "ProductName", "Household VTT" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

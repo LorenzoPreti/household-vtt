@@ -102,7 +102,7 @@ class _LoginpageState extends State<Loginpage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text("Benvenuto alla Casa", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.green)),
+                  const Text("Benvenuto nella Casa", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.green)),
                   const SizedBox(height: 20),
                   DropdownButtonFormField<String>(
                     value: _selezionatoUsername,
