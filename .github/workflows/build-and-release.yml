@@ -27,26 +27,18 @@ jobs:
           flutter config --enable-windows-desktop
           flutter build windows --release
 
-      - name: Create MSIX installer
-        run: |
-          dart pub global activate msix
-          dart run msix:create --install-certificate false
-
       - name: Package files
         run: |
-          $releasePath = Get-ChildItem -Path "build\windows" -Filter "Release" -Recurse | Select-Object -ExpandProperty FullName -First 1
-            
-          Compress-Archive -Path "$releasePath\*" -DestinationPath household_vtt-windows.zip
-            
-          Copy-Item -Path "$releasePath\*.msix" -Destination .
+          # Trova la cartella Release dove flutter ha compilato l'app
+          $releaseDir = Get-ChildItem -Path "build\windows" -Filter "Release" -Directory -Recurse | Select-Object -ExpandProperty FullName -First 1
+          # Crea lo zip partendo dal contenuto della cartella Release
+          Compress-Archive -Path "$releaseDir\*" -DestinationPath household_vtt-windows.zip
         shell: pwsh
 
       - uses: actions/upload-artifact@v4
         with:
           name: windows-artifacts
-          path: |
-            household_vtt-windows.zip
-            **/*.msix
+          path: household_vtt-windows.zip
 
   build-macos:
     runs-on: macos-latest
@@ -73,7 +65,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: macos-build
+          name: macos-artifacts
           path: household_vtt-macos.zip
 
   release:
@@ -89,8 +81,7 @@ jobs:
         with:
           files: |
             artifacts/windows-artifacts/household_vtt-windows.zip
-            artifacts/windows-artifacts/**/*.msix
-            artifacts/macos-build/household_vtt-macos.zip
+            artifacts/macos-artifacts/household_vtt-macos.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

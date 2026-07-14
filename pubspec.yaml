@@ -54,7 +54,6 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.14.4
-  msix: ^3.18.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -108,10 +107,3 @@ flutter_launcher_icons:
     image_path: "Assets/Simbolo app.png"
 
 
-msix_config:
-  display_name: Household VTT
-  publisher_display_name: Lorenzo Preti
-  identity_name: com.lorenzopreti.householdvtt
-  msix_version: 1.0.0.0
-  logo_path: Assets/Simbolo app.png
-  capabilities: internetClient
