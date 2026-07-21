@@ -20,7 +20,7 @@ class LogicaTiri {
       if (frequenze[i] == 3) successi["Critico"] = successi["Critico"]! + 1;
       if (frequenze[i] == 4) successi["Estremo"] = successi["Estremo"]! + 1;
       if (frequenze[i] == 5) successi["Impossibile"] = successi["Impossibile"]! + 1;
-      if (frequenze[i] == 6) successi["Successone"] = successi["Successone"]! + 1;
+      if (frequenze[i] >= 6) successi["Successone"] = successi["Successone"]! + 1;
     }
 
     return {
