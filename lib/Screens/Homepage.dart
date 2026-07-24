@@ -127,29 +127,35 @@ class _HomepageState extends State<Homepage> {
                   final tuttiPersonaggi = snapshot.data![0].docs;
                   final attiviDocs = snapshot.data![1].docs;
 
-                  final docAttivoDelGiocatore = attiviDocs.cast<QueryDocumentSnapshot>().firstWhere(
-                        (doc) => (doc.data() as Map<String, dynamic>)['giocatore'] == _usernameLoggato,
-                    orElse: () => attiviDocs.first,
-                  );
+                  // 1. Trova TUTTI i personaggi attivi associati a questo utente
+                  final iMieiDocumentiAttivi = attiviDocs.cast<QueryDocumentSnapshot>().where(
+                          (doc) => (doc.data() as Map<String, dynamic>)['giocatore'] == _usernameLoggato
+                  ).toList();
 
-                  final nomePersonaggioDelGiocatore = (docAttivoDelGiocatore.data() as Map<String, dynamic>)['nome'];
+                  // Estrai la lista dei nomi dei personaggi controllati dall'utente loggato
+                  final iMieiNomi = iMieiDocumentiAttivi
+                      .map((doc) => (doc.data() as Map<String, dynamic>)['nome'] as String)
+                      .toSet();
 
+                  // Nomi di tutti i personaggi attivi sul tavolo (per mostrare le carte a schermo)
                   final nomiAttivi = attiviDocs.map((doc) => (doc.data() as Map<String, dynamic>)['nome'] as String).toSet();
+
                   final personaggiFiltrati = tuttiPersonaggi.where((doc) {
                     final data = doc.data() as Map<String, dynamic>;
                     return nomiAttivi.contains(data['Nome']);
                   }).toList();
 
+                  // Personaggi da passare alla chat (tutti quelli dell'utente o tutti per il Master)
                   var mioPersonaggioPerChat = tuttiPersonaggi.where((doc) {
                     final data = doc.data() as Map<String, dynamic>;
-                    return data['Nome'] == nomePersonaggioDelGiocatore;
+                    return iMieiNomi.contains(data['Nome']);
                   }).toList();
-
-                  final int numeroCarte = personaggiFiltrati.length;
 
                   if (isMaster){
                     mioPersonaggioPerChat = personaggiFiltrati;
                   }
+
+                  final int numeroCarte = personaggiFiltrati.length;
 
                   return SidebarRetrattile(
                     pannelloContent: Chatcolumn(
@@ -173,7 +179,7 @@ class _HomepageState extends State<Homepage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: personaggiFiltrati.map((doc) {
                                   final data = doc.data() as Map<String, dynamic>;
-                                  final isMioPersonaggio = data['Nome'] == nomePersonaggioDelGiocatore;
+                                  final isMioPersonaggio = iMieiNomi.contains(data['Nome']);
 
                                   return Expanded(
                                     child: Padding(
